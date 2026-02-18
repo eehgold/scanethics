@@ -212,7 +212,7 @@ def main():
 
     # ── Post-scan intelligence analysis ──────────────────────────────────────
     reporter.console.print()
-    reporter.info("Analyse intelligente des résultats en cours …")
+    reporter.info("Running intelligent post-scan analysis …")
     analysis = Analyzer(target, all_results).run()
     reporter.analysis_report(analysis)
 
@@ -262,7 +262,7 @@ def main():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, default=str)
 
-    reporter.success(f"Rapport sauvegardé → {output_path}")
+    reporter.success(f"Report saved → {output_path}")
 
 
 if __name__ == "__main__":

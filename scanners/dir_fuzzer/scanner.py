@@ -91,14 +91,14 @@ class DirFuzzer(BaseScanner):
             redirect_ratio = redirect_count / len(findings)
             if redirect_ratio > 0.85:
                 reporter.warning(
-                    f"[bold yellow]ATTENTION[/bold yellow] : {redirect_count}/{len(findings)} résultats "
-                    f"sont des redirections 3xx — le serveur redirige tout le trafic HTTP vers HTTPS.\n"
-                    f"  → Ces résultats sont des [bold]faux positifs[/bold]. Relance le scan sur HTTPS :\n"
+                    f"[bold yellow]WARNING[/bold yellow]: {redirect_count}/{len(findings)} results "
+                    f"are 3xx redirects -- the server redirects all HTTP traffic to HTTPS.\n"
+                    f"  -> These results are [bold]false positives[/bold]. Re-run the scan on HTTPS:\n"
                     f"    [bold cyan]python main.py https://{self.target.hostname} --only dirs[/bold cyan]"
                 )
                 # Still store them but flag them
                 for f in findings:
-                    f["note"] = f.get("note", "") + " [FAUX POSITIF — redirect HTTP→HTTPS]"
+                    f["note"] = f.get("note", "") + " [FALSE POSITIVE -- HTTP->HTTPS redirect]"
 
         if findings:
             reporter.findings_table(

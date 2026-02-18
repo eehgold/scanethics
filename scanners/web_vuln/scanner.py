@@ -86,7 +86,7 @@ class WebVulnScanner(BaseScanner):
         # If we followed a redirect, report the final URL
         final_url = resp.url
         if final_url != self.target.base_url:
-            reporter.info(f"Redirigé vers : [bold]{final_url}[/bold]")
+            reporter.info(f"Redirected to: [bold]{final_url}[/bold]")
 
         reporter.info(f"Response: HTTP {resp.status_code}  |  {len(resp.content)} bytes")
 
@@ -149,7 +149,7 @@ class WebVulnScanner(BaseScanner):
             reporter.finding("No HTTPS", "cleartext traffic possible", severity="high")
         elif self.target.scheme == "http" and redirected_to_https:
             # HTTP redirects to HTTPS — note it but it's not a critical issue
-            reporter.info("HTTP redirige vers HTTPS (correct), mais analyse les headers HTTPS ci-dessous.")
+            reporter.info("HTTP redirects to HTTPS (correct) -- analysing final HTTPS headers below.")
 
         hsts = resp.headers.get("Strict-Transport-Security", "")
         if not hsts:
@@ -158,8 +158,8 @@ class WebVulnScanner(BaseScanner):
         elif "includeSubDomains" not in hsts:
             findings.append({
                 "severity": "LOW",
-                "check": "HSTS incomplet",
-                "detail": "includeSubDomains absent du header HSTS",
+                "check": "Incomplete HSTS",
+                "detail": "includeSubDomains missing from HSTS header",
             })
         return findings
 

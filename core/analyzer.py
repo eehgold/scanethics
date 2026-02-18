@@ -18,36 +18,36 @@ from dataclasses import dataclass, field
 # ── Known high-value / dangerous services ────────────────────────────────────
 
 NOTABLE_PORTS: dict[int, dict] = {
-    21:    {"service": "FTP",           "severity": "HIGH",     "note": "FTP en clair — credentials sniffables. Cherche anonymous login."},
-    22:    {"service": "SSH",           "severity": "MEDIUM",   "note": "SSH exposé. Vérifie la version (bannière) pour CVEs connus."},
-    23:    {"service": "Telnet",        "severity": "CRITICAL", "note": "Telnet = clair text. Credentials capturables en réseau."},
-    25:    {"service": "SMTP",          "severity": "MEDIUM",   "note": "SMTP exposé. Teste open relay, user enumeration (VRFY/EXPN)."},
-    3306:  {"service": "MySQL",         "severity": "HIGH",     "note": "Base de données exposée publiquement. Accès direct possible."},
-    5432:  {"service": "PostgreSQL",    "severity": "HIGH",     "note": "Base de données exposée publiquement."},
-    6379:  {"service": "Redis",         "severity": "CRITICAL", "note": "Redis souvent sans auth → RCE via cron/SSH keys. CVE-2022-0543."},
-    9200:  {"service": "Elasticsearch", "severity": "HIGH",     "note": "Elasticsearch souvent sans auth → dump de données complet."},
-    9300:  {"service": "Elasticsearch", "severity": "HIGH",     "note": "Port cluster Elasticsearch — accès non authentifié probable."},
-    11211: {"service": "Memcached",     "severity": "HIGH",     "note": "Memcached sans auth → dump cache. Utilisé aussi pour DRDoS."},
-    27017: {"service": "MongoDB",       "severity": "CRITICAL", "note": "MongoDB souvent sans auth. Dump complet via mongo shell."},
-    5900:  {"service": "VNC",           "severity": "HIGH",     "note": "VNC exposé. Brute-force possible, parfois sans mot de passe."},
-    3389:  {"service": "RDP",           "severity": "HIGH",     "note": "RDP exposé. BlueKeep (CVE-2019-0708), DejaBlue, brute-force."},
-    4444:  {"service": "Metasploit",    "severity": "CRITICAL", "note": "Port Metasploit par défaut — système peut déjà être compromis!"},
-    8888:  {"service": "Jupyter",       "severity": "CRITICAL", "note": "Jupyter Notebook souvent sans auth → exécution de code arbitraire."},
-    9090:  {"service": "Prometheus",    "severity": "MEDIUM",   "note": "Prometheus metrics exposées — fuite d'infos système."},
-    15672: {"service": "RabbitMQ Mgmt", "severity": "MEDIUM",   "note": "Interface RabbitMQ. Credentials par défaut : guest/guest."},
-    2375:  {"service": "Docker API",    "severity": "CRITICAL", "note": "Docker API non TLS → container escape, RCE root sur l'hôte."},
-    2376:  {"service": "Docker TLS",    "severity": "HIGH",     "note": "Docker API TLS. Vérifie si le certificat client est requis."},
-    8080:  {"service": "HTTP alt",      "severity": "LOW",      "note": "Serveur HTTP alternatif. Peut exposer un proxy ou app de dev."},
-    8443:  {"service": "HTTPS alt",     "severity": "LOW",      "note": "HTTPS alternatif. Souvent panel admin ou app de staging."},
-    10000: {"service": "Webmin",        "severity": "CRITICAL", "note": "Webmin (admin serveur web). CVE-2019-15107 = RCE non authentifié. Accède à https://host:10000"},
-    1433:  {"service": "MSSQL",         "severity": "HIGH",     "note": "SQL Server exposé. Brute-force sa/admin, xp_cmdshell possible."},
-    1521:  {"service": "Oracle DB",     "severity": "HIGH",     "note": "Oracle DB exposée. Brute-force SID, TNS poisoning."},
-    5984:  {"service": "CouchDB",       "severity": "HIGH",     "note": "CouchDB — souvent accessible sans auth sur /_all_dbs."},
-    7474:  {"service": "Neo4j",         "severity": "MEDIUM",   "note": "Neo4j browser exposé. Cypher injection possible."},
-    8983:  {"service": "Apache Solr",   "severity": "HIGH",     "note": "Solr Log4Shell (CVE-2021-44228) si version < 8.11.1."},
-    61616: {"service": "ActiveMQ",      "severity": "CRITICAL", "note": "ActiveMQ CVE-2023-46604 = RCE non authentifié (très exploité)."},
-    50070: {"service": "Hadoop HDFS",   "severity": "HIGH",     "note": "Hadoop NameNode UI — accès fichiers sans auth possible."},
-    1883:  {"service": "MQTT",          "severity": "MEDIUM",   "note": "Broker MQTT. Souvent sans auth → subscribe à tous les topics."},
+    21:    {"service": "FTP",           "severity": "HIGH",     "note": "FTP cleartext — credentials sniffable. Check for anonymous login."},
+    22:    {"service": "SSH",           "severity": "MEDIUM",   "note": "SSH exposed. Check version (banner) for known CVEs."},
+    23:    {"service": "Telnet",        "severity": "CRITICAL", "note": "Telnet = cleartext. Credentials capturable on the network."},
+    25:    {"service": "SMTP",          "severity": "MEDIUM",   "note": "SMTP exposed. Test open relay, user enumeration (VRFY/EXPN)."},
+    3306:  {"service": "MySQL",         "severity": "HIGH",     "note": "Database publicly exposed. Direct access possible."},
+    5432:  {"service": "PostgreSQL",    "severity": "HIGH",     "note": "Database publicly exposed."},
+    6379:  {"service": "Redis",         "severity": "CRITICAL", "note": "Redis often has no auth → RCE via cron/SSH keys. CVE-2022-0543."},
+    9200:  {"service": "Elasticsearch", "severity": "HIGH",     "note": "Elasticsearch often has no auth → full data dump possible."},
+    9300:  {"service": "Elasticsearch", "severity": "HIGH",     "note": "Elasticsearch cluster port — unauthenticated access likely."},
+    11211: {"service": "Memcached",     "severity": "HIGH",     "note": "Memcached no auth → cache dump. Also used for DRDoS amplification."},
+    27017: {"service": "MongoDB",       "severity": "CRITICAL", "note": "MongoDB often has no auth. Full dump via mongo shell."},
+    5900:  {"service": "VNC",           "severity": "HIGH",     "note": "VNC exposed. Brute-force possible, sometimes no password required."},
+    3389:  {"service": "RDP",           "severity": "HIGH",     "note": "RDP exposed. BlueKeep (CVE-2019-0708), DejaBlue, brute-force."},
+    4444:  {"service": "Metasploit",    "severity": "CRITICAL", "note": "Default Metasploit port — system may already be compromised!"},
+    8888:  {"service": "Jupyter",       "severity": "CRITICAL", "note": "Jupyter Notebook often has no auth → arbitrary code execution."},
+    9090:  {"service": "Prometheus",    "severity": "MEDIUM",   "note": "Prometheus metrics exposed — system information disclosure."},
+    15672: {"service": "RabbitMQ Mgmt", "severity": "MEDIUM",   "note": "RabbitMQ management UI. Default credentials: guest/guest."},
+    2375:  {"service": "Docker API",    "severity": "CRITICAL", "note": "Docker API without TLS → container escape, root RCE on host."},
+    2376:  {"service": "Docker TLS",    "severity": "HIGH",     "note": "Docker TLS API. Check if client certificate is required."},
+    8080:  {"service": "HTTP alt",      "severity": "LOW",      "note": "Alternate HTTP server. May expose a proxy or dev app."},
+    8443:  {"service": "HTTPS alt",     "severity": "LOW",      "note": "Alternate HTTPS. Often an admin panel or staging app."},
+    10000: {"service": "Webmin",        "severity": "CRITICAL", "note": "Webmin (web-based server admin). CVE-2019-15107 = unauthenticated RCE. Visit https://host:10000"},
+    1433:  {"service": "MSSQL",         "severity": "HIGH",     "note": "SQL Server publicly exposed. Brute-force sa/admin, xp_cmdshell possible."},
+    1521:  {"service": "Oracle DB",     "severity": "HIGH",     "note": "Oracle DB exposed. Brute-force SID, TNS poisoning."},
+    5984:  {"service": "CouchDB",       "severity": "HIGH",     "note": "CouchDB — often accessible without auth at /_all_dbs."},
+    7474:  {"service": "Neo4j",         "severity": "MEDIUM",   "note": "Neo4j browser exposed. Cypher injection possible."},
+    8983:  {"service": "Apache Solr",   "severity": "HIGH",     "note": "Solr Log4Shell (CVE-2021-44228) if version < 8.11.1."},
+    61616: {"service": "ActiveMQ",      "severity": "CRITICAL", "note": "ActiveMQ CVE-2023-46604 = unauthenticated RCE (widely exploited)."},
+    50070: {"service": "Hadoop HDFS",   "severity": "HIGH",     "note": "Hadoop NameNode UI — file access without auth possible."},
+    1883:  {"service": "MQTT",          "severity": "MEDIUM",   "note": "MQTT broker. Often no auth → subscribe to all topics."},
 }
 
 # High-value subdomain prefixes (real services, not wildcard noise)
@@ -155,7 +155,7 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category = "Port",
                     severity = info["severity"],
-                    title    = f"Port {port} ouvert — {info['service']}",
+                    title    = f"Port {port} open — {info['service']}",
                     detail   = info["note"],
                     action   = f"Investigate: https://{self.target.hostname}:{port}  |  Banner: {banner[:100] or 'N/A'}",
                 ))
@@ -165,9 +165,9 @@ class Analyzer:
                     findings.append(AnalysisFinding(
                         category = "Port",
                         severity = "LOW",
-                        title    = f"Port {port} ouvert — service inconnu",
-                        detail   = banner[:120] if banner else "Aucune bannière récupérée.",
-                        action   = f"Identifier le service manuellement sur le port {port}.",
+                        title    = f"Port {port} open — unknown service",
+                        detail   = banner[:120] if banner else "No banner retrieved.",
+                        action   = f"Manually identify the service on port {port}.",
                     ))
 
         return findings
@@ -192,12 +192,12 @@ class Analyzer:
             findings.append(AnalysisFinding(
                 category       = "DirFuzzer",
                 severity       = "INFO",
-                title          = "Faux positifs — redirection HTTP → HTTPS globale",
+                title          = "False positives — global HTTP → HTTPS redirect",
                 detail         = (
-                    f"{redirect_count}/{len(all_entries)} chemins retournent un redirect 3xx. "
-                    "Le serveur redirige tout le trafic HTTP vers HTTPS, rendant les résultats non fiables."
+                    f"{redirect_count}/{len(all_entries)} paths returned a 3xx redirect. "
+                    "The server redirects all HTTP traffic to HTTPS, making these results unreliable."
                 ),
-                action         = f"Relancer le fuzzer directement sur HTTPS : python main.py https://{self.target.hostname} --only dirs",
+                action         = f"Re-run the fuzzer directly on HTTPS: python main.py https://{self.target.hostname} --only dirs",
                 false_positive = True,
             ))
             return findings  # No point analysing the rest — all noise
@@ -222,17 +222,17 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category = "DirFuzzer",
                     severity = "CRITICAL",
-                    title    = f"Fichier sensible accessible : /{path}",
-                    detail   = f"HTTP 200 — {size} octets. Ce fichier ne devrait pas être public.",
-                    action   = f"Accède à {url} et vérifie le contenu immédiatement.",
+                    title    = f"Sensitive file accessible: /{path}",
+                    detail   = f"HTTP 200 — {size} bytes. This file should not be publicly accessible.",
+                    action   = f"Access {url} and inspect the content immediately.",
                 ))
             else:
                 findings.append(AnalysisFinding(
                     category = "DirFuzzer",
                     severity = "MEDIUM",
-                    title    = f"Chemin découvert : /{path}",
-                    detail   = f"HTTP 200 — {size} octets.",
-                    action   = f"Examiner manuellement : {url}",
+                    title    = f"Path discovered: /{path}",
+                    detail   = f"HTTP 200 — {size} bytes.",
+                    action   = f"Manually inspect: {url}",
                 ))
 
         for entry in auth_403:
@@ -241,9 +241,9 @@ class Analyzer:
             findings.append(AnalysisFinding(
                 category = "DirFuzzer",
                 severity = "LOW",
-                title    = f"Ressource protégée détectée : /{path}",
-                detail   = f"HTTP {entry.get('status')} — accès refusé mais existence confirmée.",
-                action   = f"Tenter de contourner l'authentification ou brute-forcer : {url}",
+                title    = f"Protected resource detected: /{path}",
+                detail   = f"HTTP {entry.get('status')} — access denied but existence confirmed.",
+                action   = f"Attempt to bypass authentication or brute-force: {url}",
             ))
 
         return findings
@@ -270,9 +270,9 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category       = "WebVuln",
                     severity       = "INFO",
-                    title          = "HTTP sans HTTPS — faux positif",
-                    detail         = "Le scanner a analysé http:// mais le port 443 est ouvert. Le site redirige bien vers HTTPS.",
-                    action         = "Relancer WebVuln directement sur https:// pour une analyse précise.",
+                    title          = "HTTP without HTTPS — false positive",
+                    detail         = "The scanner analysed http:// but port 443 is open. The site correctly redirects to HTTPS.",
+                    action         = "Re-run WebVuln directly on https:// for accurate analysis.",
                     false_positive = True,
                 ))
                 continue
@@ -309,12 +309,12 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category       = "Subdomains",
                     severity       = "INFO",
-                    title          = f"Wildcard DNS détecté → {wildcard_ip}",
+                    title          = f"Wildcard DNS detected → {wildcard_ip}",
                     detail         = (
-                        f"{len(wildcard_noise)} sous-domaines résolvent vers {wildcard_ip} à cause d'un enregistrement "
-                        f"*.{self.target.hostname} → leur existence en tant que service est non confirmée."
+                        f"{len(wildcard_noise)} subdomains resolve to {wildcard_ip} due to a "
+                        f"*.{self.target.hostname} wildcard record — their existence as actual services is unconfirmed."
                     ),
-                    action         = "Vérifier manuellement les sous-domaines à haute valeur listés ci-dessous.",
+                    action         = "Manually verify the high-value subdomains listed below.",
                     false_positive = True,
                 ))
 
@@ -325,9 +325,9 @@ class Analyzer:
                     findings.append(AnalysisFinding(
                         category = "Subdomains",
                         severity = "MEDIUM",
-                        title    = f"Sous-domaine à vérifier (wildcard) : {sub['subdomain']}",
-                        detail   = f"Résout vers {sub['ip']} (wildcard) mais le préfixe '{prefix}' suggère un service réel potentiel.",
-                        action   = f"Ouvrir https://{sub['subdomain']} dans un navigateur pour confirmer.",
+                        title    = f"Subdomain to verify (wildcard): {sub['subdomain']}",
+                        detail   = f"Resolves to {sub['ip']} (wildcard) but prefix '{prefix}' suggests a potentially real service.",
+                        action   = f"Open https://{sub['subdomain']} in a browser to confirm.",
                     ))
 
             # Subdomains with a DIFFERENT IP — definitely real
@@ -335,9 +335,9 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category = "Subdomains",
                     severity = "HIGH",
-                    title    = f"Sous-domaine réel (IP différente) : {sub['subdomain']}",
-                    detail   = f"IP : {sub['ip']} ≠ wildcard {wildcard_ip} — ce service existe vraiment.",
-                    action   = f"Scanner ce sous-domaine séparément : python main.py {sub['subdomain']}",
+                    title    = f"Real subdomain (different IP): {sub['subdomain']}",
+                    detail   = f"IP: {sub['ip']} ≠ wildcard {wildcard_ip} — this service actually exists.",
+                    action   = f"Scan this subdomain separately: python main.py {sub['subdomain']}",
                 ))
 
         else:
@@ -348,9 +348,9 @@ class Analyzer:
                 findings.append(AnalysisFinding(
                     category = "Subdomains",
                     severity = sev,
-                    title    = f"Sous-domaine : {sub['subdomain']}",
-                    detail   = f"IP : {sub['ip']}  |  source : {sub.get('source', '?')}",
-                    action   = f"Scanner : python main.py {sub['subdomain']}" if sev == "HIGH" else "",
+                    title    = f"Subdomain: {sub['subdomain']}",
+                    detail   = f"IP: {sub['ip']}  |  source: {sub.get('source', '?')}",
+                    action   = f"Scan: python main.py {sub['subdomain']}" if sev == "HIGH" else "",
                 ))
 
         return findings
@@ -361,39 +361,39 @@ class Analyzer:
 def _web_vuln_action(check: str) -> str:
     hints = {
         "Missing Strict-Transport-Security": (
-            "Ajouter 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' "
-            "dans les headers HTTP du serveur."
+            "Add 'Strict-Transport-Security: max-age=31536000; includeSubDomains; preload' "
+            "to the server HTTP headers."
         ),
         "Missing Content-Security-Policy": (
-            "Définir une CSP restrictive. Impact : XSS, injection de scripts tiers."
+            "Define a strict CSP. Impact: XSS, third-party script injection."
         ),
         "Missing X-Frame-Options": (
-            "Ajouter 'X-Frame-Options: DENY' ou utiliser CSP 'frame-ancestors none'. "
-            "Tester le clickjacking avec un iframe basique."
+            "Add 'X-Frame-Options: DENY' or use CSP 'frame-ancestors none'. "
+            "Test clickjacking with a basic iframe."
         ),
         "Missing X-Content-Type-Options": (
-            "Ajouter 'X-Content-Type-Options: nosniff'."
+            "Add 'X-Content-Type-Options: nosniff'."
         ),
         "Directory listing": (
-            "Désactiver l'indexation de répertoire (Apache: Options -Indexes, Nginx: autoindex off)."
+            "Disable directory indexing (Apache: Options -Indexes, Nginx: autoindex off)."
         ),
         "CORS wildcard": (
-            "Remplacer Access-Control-Allow-Origin: * par un domaine explicite autorisé."
+            "Replace Access-Control-Allow-Origin: * with an explicit allowed domain."
         ),
         "CORS origin reflection": (
-            "CRITIQUE : le serveur reflète n'importe quelle origine. "
-            "Combiné à Allow-Credentials: true → vol de session cross-origin."
+            "CRITICAL: the server reflects any origin. "
+            "Combined with Allow-Credentials: true → cross-origin session hijacking."
         ),
         "Dangerous HTTP methods": (
-            "Désactiver PUT/DELETE/TRACE dans la config du serveur. "
-            "TRACE active les attaques XST (Cross-Site Tracing)."
+            "Disable PUT/DELETE/TRACE in server config. "
+            "TRACE enables XST (Cross-Site Tracing) attacks."
         ),
         "Error leakage": (
-            "Configurer des pages d'erreur génériques. "
-            "Les stack traces révèlent la stack technique et facilitent le ciblage."
+            "Configure generic error pages. "
+            "Stack traces reveal the technology stack and aid targeted attacks."
         ),
         "Insecure Cookie": (
-            "Ajouter les flags HttpOnly, Secure et SameSite=Strict à tous les cookies de session."
+            "Add HttpOnly, Secure and SameSite=Strict flags to all session cookies."
         ),
     }
     for key, hint in hints.items():

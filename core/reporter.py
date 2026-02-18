@@ -98,7 +98,7 @@ def summary(scan_results: dict):
     for scanner_name, data in scan_results.items():
         count = data.get("count", len(data.get("findings", [])))
         status = "[green]OK[/green]" if data.get("success") else "[red]ERROR[/red]"
-        console.print(f"  {status}  [bold]{scanner_name}[/bold] — {count} finding(s)")
+        console.print(f"  {status}  [bold]{scanner_name}[/bold] -- {count} finding(s)")
     console.print(f"\n[dim]Completed at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]")
 
 
@@ -117,38 +117,41 @@ _SEV_ORDER = {"CRITICAL": 0, "HIGH": 1, "MEDIUM": 2, "LOW": 3, "INFO": 4}
 
 def analysis_report(report) -> None:
     """Render the full post-scan analysis from an AnalysisReport object."""
-    from rich.padding import Padding
+    from rich.padding import Padding  # noqa: F401
 
     console.print()
-    console.rule("[bold magenta]ANALYSE INTELLIGENTE DES RÉSULTATS[/bold magenta]")
+    console.rule("[bold magenta]INTELLIGENT ANALYSIS REPORT[/bold magenta]")
     console.print()
 
     # ── Risk score panel ─────────────────────────────────────────────────────
     real = report.all_real_findings
-    crit  = sum(1 for f in real if f.severity == "CRITICAL")
-    high  = sum(1 for f in real if f.severity == "HIGH")
-    med   = sum(1 for f in real if f.severity == "MEDIUM")
-    low   = sum(1 for f in real if f.severity == "LOW")
+    crit = sum(1 for f in real if f.severity == "CRITICAL")
+    high = sum(1 for f in real if f.severity == "HIGH")
+    med  = sum(1 for f in real if f.severity == "MEDIUM")
+    low  = sum(1 for f in real if f.severity == "LOW")
 
     if crit > 0:
-        risk_label = "[bold white on red] RISQUE CRITIQUE [/bold white on red]"
+        risk_label = "[bold white on red] CRITICAL RISK [/bold white on red]"
     elif high > 0:
-        risk_label = "[bold red] RISQUE ÉLEVÉ [/bold red]"
+        risk_label = "[bold red] HIGH RISK [/bold red]"
     elif med > 0:
-        risk_label = "[bold yellow] RISQUE MODÉRÉ [/bold yellow]"
+        risk_label = "[bold yellow] MEDIUM RISK [/bold yellow]"
     else:
-        risk_label = "[bold green] RISQUE FAIBLE [/bold green]"
+        risk_label = "[bold green] LOW RISK [/bold green]"
 
     score_text = Text()
-    score_text.append(f"  Cible : {report.target}\n", style="bold white")
-    score_text.append(f"  Findings réels : {len(real)}   ", style="white")
+    score_text.append(f"  Target: {report.target}\n", style="bold white")
+    score_text.append(f"  Real findings: {len(real)}   ", style="white")
     score_text.append(f"CRITICAL:{crit}  ", style="bold red" if crit else "dim")
     score_text.append(f"HIGH:{high}  ",     style="red"      if high else "dim")
     score_text.append(f"MEDIUM:{med}  ",    style="yellow"   if med  else "dim")
     score_text.append(f"LOW:{low}",         style="blue"     if low  else "dim")
 
     if report.wildcard_ip:
-        score_text.append(f"\n  [!] Wildcard DNS détecté → {report.wildcard_ip} (sous-domaines à vérifier manuellement)", style="dim yellow")
+        score_text.append(
+            f"\n  [!] Wildcard DNS detected -> {report.wildcard_ip} (subdomains need manual verification)",
+            style="dim yellow",
+        )
 
     console.print(Panel(score_text, title=risk_label, style="magenta", box=box.HEAVY))
     console.print()
@@ -157,13 +160,13 @@ def analysis_report(report) -> None:
     all_f = sorted(real, key=lambda f: (_SEV_ORDER.get(f.severity, 99), f.category))
 
     if not all_f:
-        console.print("  [green]Aucun finding critique détecté.[/green]\n")
+        console.print("  [green]No critical findings detected.[/green]\n")
     else:
         table = Table(box=box.ROUNDED, style="magenta", show_lines=True, expand=True)
-        table.add_column("Sév.",      style="bold", width=10, justify="center")
-        table.add_column("Catégorie", style="cyan", width=14)
-        table.add_column("Finding",   style="white")
-        table.add_column("Action recommandée", style="yellow")
+        table.add_column("Sev.",     style="bold", width=10, justify="center")
+        table.add_column("Category", style="cyan", width=14)
+        table.add_column("Finding",  style="white")
+        table.add_column("Recommended action", style="yellow")
 
         for f in all_f:
             sev_style = _SEV_STYLE.get(f.severity, "white")
@@ -171,7 +174,7 @@ def analysis_report(report) -> None:
                 f"[{sev_style}]{f.severity}[/{sev_style}]",
                 f.category,
                 f"[bold]{f.title}[/bold]\n[dim]{f.detail}[/dim]",
-                f.action or "—",
+                f.action or "--",
             )
         console.print(table)
 
@@ -179,11 +182,11 @@ def analysis_report(report) -> None:
     noise = [f for f in report.all_real_findings + _get_fp(report) if f.false_positive]
     if noise:
         console.print()
-        console.print("[dim]── Faux positifs filtrés ─────────────────────────────────────────────[/dim]")
+        console.print("[dim]-- Filtered false positives --------------------------------------------[/dim]")
         for f in noise:
-            console.print(f"  [dim]• {f.title} — {f.detail}[/dim]")
+            console.print(f"  [dim]* {f.title} -- {f.detail}[/dim]")
             if f.action:
-                console.print(f"    [dim cyan]→ {f.action}[/dim cyan]")
+                console.print(f"    [dim cyan]-> {f.action}[/dim cyan]")
 
     console.print()
 
